@@ -1,12 +1,8 @@
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { sendReport } from './SendReport';
 
-const test = () => {
-  console.log('test');
-};
-
-export const createPdf = async (reportData, caseNumber) => {
-  console.log(caseNumber);
+const createPdf = async (reportData, caseNumber) => {
   const doc = new jsPDF();
   doc.page = 1;
   doc.setFont('Times').setFontSize(18).setFont(undefined, 'bold');
@@ -21,44 +17,52 @@ export const createPdf = async (reportData, caseNumber) => {
 
   createDataTable(doc, reportData, caseNumber);
 
-  var currentDate = new Date().toLocaleDateString();
-  doc.text(170, 10, currentDate);
-  // createAreaField(doc, 'Task Being Performed', reportData.TASK_BEING_PERFORMED);
-  // createAreaField(doc, 'Nature of Incident', reportData.NATUREOFINJURY);
+  doc.setFont('Times').setFontSize(12).setFont(undefined, 'bold');
+  var currentDate = new Date();
+  doc.text(
+    currentDate.toLocaleString(),
+    doc.internal.pageSize.getWidth() / 2,
+    285,
+    {
+      align: 'center',
+    }
+  );
 
-  doc.save(`IncidentReport.pdf`);
+  let binary = doc.output();
+  return binary ? btoa(binary) : '';
+
+  // doc.save(`IncidentReport.pdf`);
 };
 
 const createDataTable = async (doc, reportData, caseNumber) => {
-  console.log(reportData);
   let tableBody = [];
   tableBody.push([
-    { content: 'Case #:' },
+    { content: 'Case #' },
     { content: caseNumber },
-    { content: 'Type:' },
+    { content: 'Type' },
     { content: 'Injury' },
   ]);
-  tableBody.push([{ content: 'Employee:' }, { content: reportData.NAME }]);
+  tableBody.push([{ content: 'Employee' }, { content: reportData.NAME }]);
   tableBody.push([
-    { content: 'Employee ID:' },
+    { content: 'Employee ID' },
     { content: reportData.CLOCKNBR },
   ]);
   tableBody.push([
-    { content: 'Incident Date:' },
+    { content: 'Incident Date' },
     { content: reportData.ACCIDENTDATE },
-    { content: 'Assigned Shift:' },
+    { content: 'Assigned Shift' },
     { content: reportData.SHIFT },
   ]);
   tableBody.push([
-    { content: 'Incident Time:' },
+    { content: 'Incident Time' },
     { content: reportData.ACCIDENTTIME },
-    { content: 'Shift Incident Occurred On:' },
+    { content: 'Shift Incident Occurred On' },
     { content: reportData.SHIFT_OCCURED },
   ]);
   tableBody.push([
-    { content: 'Incident Location:' },
+    { content: 'Incident Location' },
     { content: reportData.GENERAL_AREA },
-    { content: 'Job Code:' },
+    { content: 'Job Code' },
     { content: reportData.JOBCODE },
   ]);
   tableBody.push([
@@ -113,49 +117,24 @@ const createDataTable = async (doc, reportData, caseNumber) => {
         cellWidth: 60,
       },
       2: {
-        cellWidth: 50,
+        cellWidth: 60,
         fontStyle: 'bold',
       },
       3: {
-        cellWidth: 30,
+        cellWidth: 25,
       },
     },
     startY: 34,
     margin: { left: 10 },
-    //styles: { fontSize: 10, halign: 'right' },
+    styles: { fontSize: 12 },
     theme: 'grid',
-    // head: [['Date', 'Total Pounds Delivered', 'Metric Tons']],
     tableWidth: 'wrap',
     body: tableBody,
   });
 };
 
-const createAreaField = async (doc, title, note) => {
-  console.log('got here');
-  let tableBody = [];
-  tableBody.push([{ content: `${title}:` }, { content: note }]);
+export const processIncidentReport = async (reportData, caseNumber) => {
+  const report = await createPdf(reportData, caseNumber);
 
-  doc.autoTable({
-    headStyles: {
-      fillColor: [255, 255, 255],
-      textColor: [0, 0, 0],
-      lineWidth: 0.4,
-    },
-    bodyStyles: {
-      lineWidth: 0.4,
-    },
-    columnStyles: {
-      0: {
-        cellWidth: 40,
-      },
-      1: {
-        cellWidth: 110,
-        halign: 'left',
-      },
-    },
-    styles: { fontSize: 10, halign: 'right' },
-    theme: 'grid',
-    tableWidth: 'wrap',
-    body: tableBody,
-  });
+  await sendReport(report, 'SAFETY_INCIDENT', 'Incident Report');
 };

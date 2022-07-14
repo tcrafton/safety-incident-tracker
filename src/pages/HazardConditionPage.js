@@ -1,7 +1,7 @@
 import React from 'react';
 
 const HazardConditionPage = () => {
-  return <div>HazardConditionEntryPage</div>;
+  return <div>Hazard Condition</div>;
 };
 
 export default HazardConditionPage;

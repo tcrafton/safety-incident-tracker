@@ -1,7 +1,7 @@
 import React from 'react';
 
 const PropertyDamagePage = () => {
-  return <div>PropertyDamageEntryPage</div>;
+  return <div>Property Damage</div>;
 };
 
 export default PropertyDamagePage;

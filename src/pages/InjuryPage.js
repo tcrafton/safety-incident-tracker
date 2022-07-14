@@ -19,7 +19,7 @@ import {
   SAFETY_API_URL,
 } from '../utils/constants';
 
-import { createPdf } from '../services/CreateReport';
+import { processIncidentReport } from '../services/CreateIncidentReport';
 
 const initialState = {
   CLOCKNBR: '',
@@ -67,6 +67,8 @@ const InjuryPage = () => {
     'Medical Treatmeant',
     'First Aid',
   ];
+
+  const shifts = ['Day', 'Night', 'A', 'B', 'C', 'D'];
 
   const notify = (msg) => toast.success(msg);
   const notifyError = (msg) => toast.error(msg);
@@ -138,14 +140,13 @@ const InjuryPage = () => {
     if (param === 'DEPT_ASSIGNED') {
       setAccidentData({ ...accidentData, [param]: value.DESCRIPTION });
     } else if (param === 'LOCATION') {
-      console.log(value);
       setAccidentData({
         ...accidentData,
         CARBON_PRIMARY: value.PRIMARY_AREA,
         CARBON_LOCATION: value.DESCRIPTION,
         CARBON_ID: value.INJURYCODE,
         LOCATION: value.MAJOR_LOCATION,
-        GENERAL_AREA: value.GENERAL_AREA
+        GENERAL_AREA: value.GENERAL_AREA,
       });
     } else if (param === 'EMPLOYEE') {
       setAccidentData({
@@ -168,31 +169,30 @@ const InjuryPage = () => {
   };
 
   const handleSave = (e) => {
-    createPdf(accidentData, 9999);
-    // if (checkEntries() === false) {
-    //   return;
-    // }
+    if (checkEntries() === false) {
+      return;
+    }
 
-    // accidentData.ENTRYDATE = new Date(
-    //   accidentData.ACCIDENTDATE
-    // ).toLocaleDateString();
+    accidentData.ENTRYDATE = new Date(
+      accidentData.ACCIDENTDATE
+    ).toLocaleDateString();
 
-    // axios
-    //   .post(`${ACCIDENT_API_EF_URL}SaveAccidentData`, accidentData)
-    //   .then(function (response) {
-    //     if (response.status === 200 || response.status === 204) {
-    //       createPdf(accidentData, response.data.CASENUMBER);
-    //       setAccidentData({ ...initialState });
-    //       setSelectedSupervisor(null);
-    //       setAccidentDate(null);
-    //       setAccidentTime(null);
-    //       setDeptAssigned(null);
-    //       setIncidentLocation(null);
-    //       notify('Data Saved');
-    //     } else {
-    //       notifyError('Error Saving Data');
-    //     }
-    //   });
+    axios
+      .post(`${ACCIDENT_API_EF_URL}SaveAccidentData`, accidentData)
+      .then(function (response) {
+        if (response.status === 200 || response.status === 204) {
+          processIncidentReport(accidentData, response.data.CASENUMBER);
+          setAccidentData({ ...initialState });
+          setSelectedSupervisor(null);
+          setAccidentDate(null);
+          setAccidentTime(null);
+          setDeptAssigned(null);
+          setIncidentLocation(null);
+          notify('Data Saved');
+        } else {
+          notifyError('Error Saving Data');
+        }
+      });
   };
 
   const checkEntries = () => {
@@ -318,10 +318,10 @@ const InjuryPage = () => {
                     }
                     select
                   >
-                    {crews.map((shift, i) => {
+                    {shifts.map((shift, i) => {
                       return (
-                        <MenuItem key={i} value={shift.CREWCODE}>
-                          {shift.CREWCODE}
+                        <MenuItem key={i} value={shift}>
+                          {shift}
                         </MenuItem>
                       );
                     })}
@@ -378,7 +378,7 @@ const InjuryPage = () => {
                   minRows={5}
                   aria-label="empty textarea"
                   style={{
-                    width: 800,
+                    width: 750,
                     padding: '3px',
                     fontSize: '16px',
                     fontFamily: 'Roboto, Helvetica, Arial, sans-serif',

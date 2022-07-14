@@ -26,11 +26,11 @@ export const links = [
   },
 ];
 
-//const API_SERVER_EF = 'http://nm-apps/mag7webapief/';
-const API_SERVER_EF = 'http://localhost:49288/';
+const API_SERVER_EF = 'http://nm-apps/mag7webapief/';
+//const API_SERVER_EF = 'http://localhost:49288/';
 
-//const API_SERVER = 'http://nm-apps/mag7webapi/';
-const API_SERVER = 'http://localhost:64198/';
+const API_SERVER = 'http://nm-apps/mag7webapi/';
+//const API_SERVER = 'http://localhost:64198/';
 
 export const ACCIDENT_API_EF_URL = `${API_SERVER_EF}api/AccidentData/`;
 export const SAFETY_API_URL = `${API_SERVER}api/SafetyIncident/`;
