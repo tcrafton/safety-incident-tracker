@@ -181,6 +181,7 @@ const InjuryPage = () => {
       .post(`${ACCIDENT_API_EF_URL}SaveAccidentData`, accidentData)
       .then(function (response) {
         if (response.status === 200 || response.status === 204) {
+          // creates PDF and sends it in an email
           processIncidentReport(accidentData, response.data.CASENUMBER);
           setAccidentData({ ...initialState });
           setSelectedSupervisor(null);
@@ -500,6 +501,9 @@ const InjuryPage = () => {
                 <Button variant="contained" onClick={handleSave}>
                   Save
                 </Button>
+              </Grid>
+              <Grid item xs={8}>
+                <label>Email will be sent after successfully saved</label>
               </Grid>
             </Grid>
           </Box>
