@@ -19,7 +19,7 @@ import {
   SAFETY_API_URL,
 } from '../utils/constants';
 
-import { processNearMissReport } from '../services/CreateIncidentReport';
+import { processReport } from '../services/CreateIncidentReport';
 
 const initialState = {
   CLOCKNBR: '',
@@ -42,7 +42,7 @@ const initialState = {
   POTENTIAL_OUTCOME: '',
   EXPECTED_OUTCOME: '',
   TASK_BEING_PERFORMED: '',
-  TYPEOFACCIDENT: 'Near Miss',
+  TYPEOFACCIDENT: 'Equipment Loss',
   ENTEREDBY: 'WEBAPP',
   RCFA_REQUIRED: 1,
 };
@@ -59,14 +59,6 @@ const PropertyDamagePage = () => {
   const [selectedSupervisor, setSelectedSupervisor] = useState(null);
   const [incidentLocation, setIncidentLocation] = useState(null);
   const [deptAssigned, setDeptAssigned] = useState(null);
-
-  const outcomes = [
-    'Fatality',
-    'Lost Time',
-    'Modified Work',
-    'Medical Treatmeant',
-    'First Aid',
-  ];
 
   const shifts = ['Day', 'Night', 'A', 'B', 'C', 'D'];
 
@@ -182,7 +174,11 @@ const PropertyDamagePage = () => {
       .then(function (response) {
         if (response.status === 200 || response.status === 204) {
           // creates PDF and sends it in an email
-          processNearMissReport(accidentData, response.data.CASENUMBER);
+          processReport(
+            accidentData,
+            response.data.CASENUMBER,
+            'Property Damage Report'
+          );
           setAccidentData({ ...initialState });
           setSelectedSupervisor(null);
           setAccidentDate(null);
@@ -237,13 +233,8 @@ const PropertyDamagePage = () => {
       return false;
     }
 
-    if (!accidentData.POTENTIAL_OUTCOME) {
-      notifyError('Select Potential Outcome');
-      return false;
-    }
-
     if (!accidentData.NATUREOFINJURY) {
-      notifyError('Enter Nature of Incident or Injury');
+      notifyError('Enter Nature of Damage/Equipment Loss');
       return false;
     }
   };
@@ -251,7 +242,7 @@ const PropertyDamagePage = () => {
   return (
     <>
       <Wrapper>
-        <h4 className="pageHeader">Near Miss Entry</h4>
+        <h4 className="pageHeader">Property Damage Entry</h4>
         <hr className="pageDivider"></hr>
         <div>
           <Box>
@@ -297,7 +288,7 @@ const PropertyDamagePage = () => {
                 </FormControl>
               </Grid>
               <Grid item xs={2}>
-                <InputLabel>Shift Near Miss Occurred On</InputLabel>
+                <InputLabel>Shift Equipment Loss Occurred On</InputLabel>
                 <FormControl sx={{ minWidth: 120 }} size="small">
                   <TextField
                     style={{ width: '100%' }}
@@ -320,7 +311,7 @@ const PropertyDamagePage = () => {
                 </FormControl>
               </Grid>
               <Grid item xs={2}>
-                <InputLabel>Near Miss Date</InputLabel>
+                <InputLabel>Equipment Loss Date</InputLabel>
                 <DatePicker
                   className="datePicker"
                   selected={accidentDate}
@@ -329,7 +320,7 @@ const PropertyDamagePage = () => {
                 />
               </Grid>
               <Grid item xs={3}>
-                <InputLabel>Near Miss Time</InputLabel>
+                <InputLabel>Equipment Loss Time</InputLabel>
                 <DatePicker
                   className="datePicker"
                   selected={accidentTime}
@@ -341,11 +332,12 @@ const PropertyDamagePage = () => {
                   dateFormat="h:mm aa"
                 />
               </Grid>
-              <Grid item xs={5}>
+              <Box width="100%" />
+              <Grid item xs={3}>
                 <InputLabel>Supervisor</InputLabel>
                 <Autocomplete
                   sx={{
-                    maxWidth: '50%',
+                    maxWidth: '85%',
                   }}
                   id="size-small-outlined"
                   size="small"
@@ -361,7 +353,6 @@ const PropertyDamagePage = () => {
                   renderInput={(params) => <TextField {...params} />}
                 />
               </Grid>
-              <Box width="100%" />
               <Grid item xs={5}>
                 <InputLabel>Dept. Employee Assigned To</InputLabel>
                 <Autocomplete
@@ -380,31 +371,8 @@ const PropertyDamagePage = () => {
                   renderInput={(params) => <TextField {...params} />}
                 />
               </Grid>
-              <Grid item xs={6}>
-                <InputLabel>Potential Outcome (Worst Case)</InputLabel>
-                <FormControl sx={{ minWidth: 240 }} size="small">
-                  <TextField
-                    style={{ width: '100%' }}
-                    variant="outlined"
-                    size="small"
-                    value={accidentData.POTENTIAL_OUTCOME}
-                    onChange={(e, label) =>
-                      handleInputChange(e, 'POTENTIAL_OUTCOME')
-                    }
-                    select
-                  >
-                    {outcomes.map((outcome, i) => {
-                      return (
-                        <MenuItem key={i} value={outcome}>
-                          {outcome}
-                        </MenuItem>
-                      );
-                    })}
-                  </TextField>
-                </FormControl>
-              </Grid>
               <Grid item xs={5}>
-                <InputLabel>Near Miss Location</InputLabel>
+                <InputLabel>Equipment Loss Location</InputLabel>
                 <Autocomplete
                   sx={{
                     maxWidth: '50%',
@@ -424,7 +392,7 @@ const PropertyDamagePage = () => {
                 />
               </Grid>
               <Grid item xs={12}>
-                <InputLabel>Nature of Near Miss</InputLabel>
+                <InputLabel>Nature of Damage/Equipment Loss</InputLabel>
                 <TextareaAutosize
                   minRows={5}
                   aria-label="empty textarea"

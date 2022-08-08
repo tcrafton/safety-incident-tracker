@@ -19,6 +19,10 @@ const createPdf = async (reportData, reportName, caseNumber, reportType) => {
     createIncidentDataTable(doc, reportData, caseNumber, reportType);
   } else if (reportName === 'Near Miss Report') {
     createNearMissDataTable(doc, reportData, caseNumber, reportType);
+  } else if (reportName === 'Property Damage Report') {
+    createPropertyDamageDataTable(doc, reportData, caseNumber, reportType);
+  } else if (reportName === 'Hazardous Condition Report') {
+    createHazardConditionDataTable(doc, reportData, caseNumber, reportType);
   }
 
   doc.setFont('Times').setFontSize(12).setFont(undefined, 'bold');
@@ -253,24 +257,212 @@ const createNearMissDataTable = async (
   });
 };
 
-export const processIncidentReport = async (reportData, caseNumber) => {
-  const report = await createPdf(
-    reportData,
-    'Incident Report',
-    caseNumber,
-    'email'
-  );
-  await sendReport(report, 'SAFETY_INCIDENT', 'Incident Report');
+const createPropertyDamageDataTable = async (
+  doc,
+  reportData,
+  caseNumber,
+  reportType
+) => {
+  let tableBody = [];
+  tableBody.push([
+    { content: 'Case #' },
+    { content: caseNumber },
+    { content: 'Type' },
+    { content: 'Equipment Loss' },
+  ]);
+  tableBody.push([{ content: 'Employee' }, { content: reportData.NAME }]);
+  tableBody.push([
+    { content: 'Employee ID' },
+    { content: reportData.CLOCKNBR },
+  ]);
+  tableBody.push([
+    { content: 'Date of Loss' },
+    {
+      content:
+        reportType === 'email'
+          ? reportData.ACCIDENTDATE
+          : new Date(reportData.ACCIDENTDATE).toLocaleDateString(),
+    },
+    { content: 'Assigned Shift' },
+    { content: reportData.SHIFT },
+  ]);
+  tableBody.push([
+    { content: 'Time of Loss' },
+    {
+      content:
+        reportType === 'email'
+          ? reportData.ACCIDENTTIME
+          : new Date(reportData.ACCIDENTTIME).toLocaleTimeString(),
+    },
+    { content: 'Shift Incident Occurred On' },
+    { content: reportData.SHIFT_OCCURED },
+  ]);
+  tableBody.push([
+    { content: 'Location' },
+    { content: reportData.GENERAL_AREA },
+    { content: 'Job Code' },
+    { content: reportData.JOBCODE },
+  ]);
+  tableBody.push([
+    { content: '' },
+    { content: reportData.CARBON_PRIMARY, colSpan: 3 },
+  ]);
+  tableBody.push([
+    { content: '' },
+    { content: reportData.CARBON_LOCATION, colSpan: 3 },
+  ]);
+
+  tableBody.push([
+    { content: 'Nature of Equipment Loss' },
+    { content: reportData.NATUREOFINJURY, colSpan: 3 },
+  ]);
+
+  tableBody.push([
+    { content: 'Authorized By' },
+    { content: reportData.FOREMANNAME, colSpan: 3 },
+  ]);
+
+  doc.autoTable({
+    headStyles: {
+      fillColor: [255, 255, 255],
+      textColor: [0, 0, 0],
+      lineWidth: 0.4,
+    },
+    bodyStyles: {
+      lineWidth: 0.4,
+    },
+    columnStyles: {
+      0: {
+        cellWidth: 50,
+        fontStyle: 'bold',
+      },
+      1: {
+        cellWidth: 60,
+      },
+      2: {
+        cellWidth: 60,
+        fontStyle: 'bold',
+      },
+      3: {
+        cellWidth: 25,
+      },
+    },
+    startY: 34,
+    margin: { left: 10 },
+    styles: { fontSize: 12 },
+    theme: 'grid',
+    tableWidth: 'wrap',
+    body: tableBody,
+  });
 };
 
-export const processNearMissReport = async (reportData, caseNumber) => {
+const createHazardConditionDataTable = async (
+  doc,
+  reportData,
+  caseNumber,
+  reportType
+) => {
+  let tableBody = [];
+  tableBody.push([
+    { content: 'Case #' },
+    { content: caseNumber },
+    { content: 'Type' },
+    { content: 'Hazardous Condition' },
+  ]);
+  tableBody.push([{ content: 'Employee' }, { content: reportData.NAME }]);
+  tableBody.push([
+    { content: 'Employee ID' },
+    { content: reportData.CLOCKNBR },
+  ]);
+  tableBody.push([
+    { content: 'Date of Hazardous Condition' },
+    {
+      content:
+        reportType === 'email'
+          ? reportData.ACCIDENTDATE
+          : new Date(reportData.ACCIDENTDATE).toLocaleDateString(),
+    },
+    { content: 'Assigned Shift' },
+    { content: reportData.SHIFT },
+  ]);
+  tableBody.push([
+    { content: 'Time of Loss' },
+    {
+      content:
+        reportType === 'email'
+          ? reportData.ACCIDENTTIME
+          : new Date(reportData.ACCIDENTTIME).toLocaleTimeString(),
+    },
+    { content: 'Shift Hazardous Condition Found' },
+    { content: reportData.SHIFT_OCCURED },
+  ]);
+  tableBody.push([
+    { content: 'Location' },
+    { content: reportData.GENERAL_AREA },
+    { content: 'Job Code' },
+    { content: reportData.JOBCODE },
+  ]);
+  tableBody.push([
+    { content: '' },
+    { content: reportData.CARBON_PRIMARY, colSpan: 3 },
+  ]);
+  tableBody.push([
+    { content: '' },
+    { content: reportData.CARBON_LOCATION, colSpan: 3 },
+  ]);
+
+  tableBody.push([
+    { content: 'Nature of Hazard Condition' },
+    { content: reportData.NATUREOFINJURY, colSpan: 3 },
+  ]);
+
+  tableBody.push([
+    { content: 'Authorized By' },
+    { content: reportData.FOREMANNAME, colSpan: 3 },
+  ]);
+
+  doc.autoTable({
+    headStyles: {
+      fillColor: [255, 255, 255],
+      textColor: [0, 0, 0],
+      lineWidth: 0.4,
+    },
+    bodyStyles: {
+      lineWidth: 0.4,
+    },
+    columnStyles: {
+      0: {
+        cellWidth: 50,
+        fontStyle: 'bold',
+      },
+      1: {
+        cellWidth: 60,
+      },
+      2: {
+        cellWidth: 60,
+        fontStyle: 'bold',
+      },
+      3: {
+        cellWidth: 25,
+      },
+    },
+    startY: 34,
+    margin: { left: 10 },
+    styles: { fontSize: 12 },
+    theme: 'grid',
+    tableWidth: 'wrap',
+    body: tableBody,
+  });
+};
+
+export const processReport = async (reportData, caseNumber, reportSubject) => {
   const report = await createPdf(
     reportData,
-    'Near Miss Report',
+    reportSubject,
     caseNumber,
     'email'
   );
-  await sendReport(report, 'SAFETY_INCIDENT', 'Near Miss Report');
+  await sendReport(report, 'SAFETY_INCIDENT', reportSubject);
 };
 
 export const printReport = async (reportData, caseNumber) => {
@@ -278,5 +470,9 @@ export const printReport = async (reportData, caseNumber) => {
     createPdf(reportData, 'Incident Report', caseNumber, 'print');
   } else if (reportData.TYPEOFACCIDENT === 'Near Miss') {
     createPdf(reportData, 'Near Miss Report', caseNumber, 'print');
+  } else if (reportData.TYPEOFACCIDENT === 'Equipment Loss') {
+    createPdf(reportData, 'Property Damage Report', caseNumber, 'print');
+  } else if (reportData.TYPEOFACCIDENT === 'Hazard Cond') {
+    createPdf(reportData, 'Hazardous Condition Report', caseNumber, 'print');
   }
 };

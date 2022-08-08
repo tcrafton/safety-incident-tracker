@@ -19,7 +19,7 @@ import {
   SAFETY_API_URL,
 } from '../utils/constants';
 
-import { processIncidentReport } from '../services/CreateIncidentReport';
+import { processReport } from '../services/CreateIncidentReport';
 
 const initialState = {
   CLOCKNBR: '',
@@ -182,7 +182,11 @@ const InjuryPage = () => {
       .then(function (response) {
         if (response.status === 200 || response.status === 204) {
           // creates PDF and sends it in an email
-          processIncidentReport(accidentData, response.data.CASENUMBER);
+          processReport(
+            accidentData,
+            response.data.CASENUMBER,
+            'Incident Report'
+          );
           setAccidentData({ ...initialState });
           setSelectedSupervisor(null);
           setAccidentDate(null);
@@ -353,11 +357,12 @@ const InjuryPage = () => {
                   dateFormat="h:mm aa"
                 />
               </Grid>
-              <Grid item xs={5}>
+              <Box width="100%" />
+              <Grid item xs={3}>
                 <InputLabel>Supervisor</InputLabel>
                 <Autocomplete
                   sx={{
-                    maxWidth: '50%',
+                    maxWidth: '85%',
                   }}
                   id="size-small-outlined"
                   size="small"
@@ -373,7 +378,7 @@ const InjuryPage = () => {
                   renderInput={(params) => <TextField {...params} />}
                 />
               </Grid>
-              <Grid item xs={6}>
+              <Grid item xs={4}>
                 <InputLabel>Task Being Performed</InputLabel>
                 <TextareaAutosize
                   minRows={5}
@@ -393,11 +398,12 @@ const InjuryPage = () => {
                   }
                 />
               </Grid>
-              <Grid item xs={5}>
+              <Box width="100%" />
+              <Grid item xs={3}>
                 <InputLabel>Dept. Employee Assigned To</InputLabel>
                 <Autocomplete
                   sx={{
-                    maxWidth: '50%',
+                    maxWidth: '85%',
                   }}
                   id="size-small-outlined"
                   size="small"
@@ -434,11 +440,12 @@ const InjuryPage = () => {
                   </TextField>
                 </FormControl>
               </Grid>
-              <Grid item xs={5}>
+              <Box width="100%" />
+              <Grid item xs={3}>
                 <InputLabel>Incident Location</InputLabel>
                 <Autocomplete
                   sx={{
-                    maxWidth: '50%',
+                    maxWidth: '85%',
                   }}
                   id="size-small-outlined"
                   size="small"

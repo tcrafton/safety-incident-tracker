@@ -19,7 +19,7 @@ import {
   SAFETY_API_URL,
 } from '../utils/constants';
 
-import { processNearMissReport } from '../services/CreateIncidentReport';
+import { processReport } from '../services/CreateIncidentReport';
 
 const initialState = {
   CLOCKNBR: '',
@@ -182,7 +182,7 @@ const NearMissPage = () => {
       .then(function (response) {
         if (response.status === 200 || response.status === 204) {
           // creates PDF and sends it in an email
-          processNearMissReport(accidentData, response.data.CASENUMBER);
+          processReport(accidentData, response.data.CASENUMBER, 'Near Miss Report');
           setAccidentData({ ...initialState });
           setSelectedSupervisor(null);
           setAccidentDate(null);
@@ -243,7 +243,7 @@ const NearMissPage = () => {
     }
 
     if (!accidentData.NATUREOFINJURY) {
-      notifyError('Enter Nature of Incident or Injury');
+      notifyError('Enter Nature of Near Miss');
       return false;
     }
   };
@@ -341,11 +341,12 @@ const NearMissPage = () => {
                   dateFormat="h:mm aa"
                 />
               </Grid>
-              <Grid item xs={5}>
+              <Box width="100%" />
+              <Grid item xs={3}>
                 <InputLabel>Supervisor</InputLabel>
                 <Autocomplete
                   sx={{
-                    maxWidth: '50%',
+                    maxWidth: '75%',
                   }}
                   id="size-small-outlined"
                   size="small"
@@ -360,8 +361,7 @@ const NearMissPage = () => {
                   }}
                   renderInput={(params) => <TextField {...params} />}
                 />
-              </Grid>
-              <Box width="100%" />
+              </Grid>             
               <Grid item xs={5}>
                 <InputLabel>Dept. Employee Assigned To</InputLabel>
                 <Autocomplete
@@ -380,7 +380,8 @@ const NearMissPage = () => {
                   renderInput={(params) => <TextField {...params} />}
                 />
               </Grid>
-              <Grid item xs={6}>
+              <Box width="100%" />
+              <Grid item xs={3}>
                 <InputLabel>Potential Outcome (Worst Case)</InputLabel>
                 <FormControl sx={{ minWidth: 240 }} size="small">
                   <TextField
@@ -423,6 +424,7 @@ const NearMissPage = () => {
                   renderInput={(params) => <TextField {...params} />}
                 />
               </Grid>
+              <Box width="100%" />
               <Grid item xs={12}>
                 <InputLabel>Nature of Near Miss</InputLabel>
                 <TextareaAutosize
