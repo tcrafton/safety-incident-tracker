@@ -86,7 +86,7 @@ const createIncidentDataTable = async (
   ]);
   tableBody.push([
     { content: 'Incident Location' },
-    { content: reportData.GENERAL_AREA },
+    { content: reportData.GENERAL_AREA ? reportData.GENERAL_AREA : '' },
     { content: 'Job Code' },
     { content: reportData.JOBCODE },
   ]);
@@ -96,7 +96,10 @@ const createIncidentDataTable = async (
   ]);
   tableBody.push([
     { content: '' },
-    { content: reportData.CARBON_LOCATION, colSpan: 3 },
+    {
+      content: reportData.CARBON_LOCATION ? reportData.CARBON_LOCATION : '',
+      colSpan: 3,
+    },
   ]);
 
   tableBody.push([

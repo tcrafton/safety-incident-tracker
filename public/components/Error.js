@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 const Error = ({ errorMessage }) => {
   return (
@@ -7,13 +7,13 @@ const Error = ({ errorMessage }) => {
 
       {errorMessage ? (
         <>
-          <h4>{errorMessage ? `Status: ${errorMessage.status}` : ''}</h4>
+          <h4>{errorMessage ? `Status: ${errorMessage.status}` : ""}</h4>
           <h4>
-            {errorMessage ? `Status Text: ${errorMessage.statusText}` : ''}
+            {errorMessage ? `Status Text: ${errorMessage.statusText}` : ""}
           </h4>
         </>
       ) : (
-        ''
+        ""
       )}
     </div>
   );

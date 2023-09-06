@@ -27,7 +27,7 @@ export const links = [
 ];
 
 const API_SERVER_EF = 'http://nm-apps/mag7webapief/';
-//const API_SERVER_EF = 'http://localhost:49288/';
+//const API_SERVER_EF = 'http://localhost:58192/';
 
 const API_SERVER = 'http://nm-apps/mag7webapi/';
 //const API_SERVER = 'http://localhost:64198/';
